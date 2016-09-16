@@ -16,11 +16,11 @@ class KnightPathFinder
 
   def initialize(start_pos)
     @visited_pos = [Node.new(start_pos)]
-    @move_tree = build_move_tree
+    build_move_tree
   end
 
   def find_path(target_pos)
-
+    
   end
 
   def build_move_tree
@@ -57,4 +57,4 @@ class KnightPathFinder
 end
 
 a = KnightPathFinder.new([0,0])
-p a.move_tree
+p a.visited_pos.map(&:value)
