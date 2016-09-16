@@ -31,6 +31,15 @@ class KnightPathFinder
   end
 
   def self.valid_moves(pos)
-
+    row, col = pos
+    valid_moves = []
+    POTENTIAL_MOVES.each do |move|
+      row += move[0]
+      col += move[1]
+      valid_moves << [row,col] if row >= 0 && row <= 7 &&
+        col >= 0 && col <= 7
+      row, col = pos
+    end
+    valid_moves
   end
 end
