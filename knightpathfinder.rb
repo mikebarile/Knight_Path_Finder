@@ -15,46 +15,66 @@ class KnightPathFinder
   ]
 
   def initialize(start_pos)
-    @visited_pos = [Node.new(start_pos)]
+    @visited_pos = [start_pos]
     build_move_tree
   end
 
   def find_path(target_pos)
-    
+    target = @root.bfs(target_pos)
+    trace_path_back(target).reverse
+  end
+
+  def trace_path_back(target)
+    return nil unless target
+    path = [target.value]
+    path += trace_path_back(target.parent) if target.parent
+    path
   end
 
   def build_move_tree
-    queue = @visited_pos
+    @root = Node.new(@visited_pos[0])
+    queue = [@root]
     until queue.empty?
       node = queue.shift
-      queue += new_move_positions!(node)
+      positions = new_move_positions!(node.value)
+      positions.each do |pos|
+        next_node = Node.new(pos)
+        node.add_child(next_node)
+        queue << next_node
+      end
     end
   end
 
-  def new_move_positions!(node)
-    new_moves = KnightPathFinder.valid_moves(node)
-    new_moves.select! do |move|
-      !@visited_pos.map(&:value).include?(move.value)
-    end
+  def new_move_positions!(pos)
+    new_moves = valid_moves(pos)
     @visited_pos += new_moves if new_moves
     return new_moves
   end
 
-  def self.valid_moves(node)
-    row, col = node.value
-    valid_moves = []
-    POTENTIAL_MOVES.each do |move|
-      row += move[0]
-      col += move[1]
-      if row >= 0 && row <= 7 && col >= 0 && col <= 7
-        valid_moves << Node.new([row,col])
-        node.add_child(valid_moves[-1])
-      end
-      row, col = node.value
+  def valid_moves(pos)
+    row = pos[0]
+    col = pos[1]
+    moves = potential_positions(pos)
+    moves.select! do |position|
+      in_bounds?(position) && !@visited_pos.include?(position)
     end
-    valid_moves
+    moves
+  end
+
+  def potential_positions(pos)
+    row = pos[0]
+    col = pos[1]
+    potential_positions = POTENTIAL_MOVES.map do |move|
+      [row + move[0], col + move[1]]
+    end
+    potential_positions
+  end
+
+  def in_bounds?(pos)
+    row, col = pos
+    row >= 0 && row <= 7 && col >= 0 && col <= 7
   end
 end
 
 a = KnightPathFinder.new([0,0])
-p a.visited_pos.map(&:value)
+p a.find_path([6,2])

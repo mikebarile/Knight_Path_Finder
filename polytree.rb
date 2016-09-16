@@ -26,8 +26,7 @@ class Node
     return self if @value == target
     @children.each do |child|
       potential_child = child.dfs(target)
-      return potential_child if potential_child &&
-        potential_child.value == target
+      return potential_child if potential_child
     end
     nil
   end
